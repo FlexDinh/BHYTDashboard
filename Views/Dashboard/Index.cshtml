@@ -1,0 +1,67 @@
+@model BHYTDashboard.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard BHYT";
+}
+
+<!-- ===== PLACEHOLDER: TV4 sẽ thiết kế giao diện Dashboard ở đây ===== -->
+
+<div class="container mt-4">
+    <h1 class="mb-4">📊 Dashboard Bảo Hiểm Y Tế — Năm @Model.Nam</h1>
+
+    <!-- Dropdown chọn năm -->
+    <div class="mb-3">
+        <label for="selectNam" class="form-label">Chọn năm:</label>
+        <select id="selectNam" class="form-select w-auto d-inline-block" onchange="location.href='/Dashboard/Index?nam=' + this.value">
+            @foreach (var n in Model.DanhSachNam)
+            {
+                <option value="@n" selected="@(n == Model.Nam)">@n</option>
+            }
+        </select>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h6 class="card-title">Tổng Hồ Sơ</h6>
+                    <h3>@Model.KPI.TongHoSo.ToString("N0")</h3>
+                    <small>@(Model.KPI.TyLeTangGiamHoSo >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamHoSo)% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6 class="card-title">BHYT Thanh Toán</h6>
+                    <h3>@Model.KPI.TongBHYTThanhToan.ToString("N0") đ</h3>
+                    <small>@(Model.KPI.TyLeTangGiamBHYT >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamBHYT)% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h6 class="card-title">BN Tự Trả</h6>
+                    <h3>@Model.KPI.TongBNTuTra.ToString("N0") đ</h3>
+                    <small>@(Model.KPI.TyLeTangGiamBNTuTra >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamBNTuTra)% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6 class="card-title">Ngày Điều Trị TB</h6>
+                    <h3>@Model.KPI.NgayDieuTriTrungBinh.ToString("F1") ngày</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO (TV4): Thêm biểu đồ Chart.js, bảng dữ liệu, nút Export Excel -->
+    <div class="alert alert-info">
+        <strong>📌 Ghi chú cho TV4:</strong> Thêm biểu đồ Chart.js (bar chart theo tháng, pie chart theo nhóm, 
+        bảng top 10 mã bệnh), và nút Export Excel gọi <code>/Dashboard/ExportExcel?nam=...&loai=...</code>
+    </div>
+</div>
