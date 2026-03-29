@@ -1,3 +1,7 @@
+using BHYTDashboard.Services;
+using BHYTDashboard.Services.Interfaces;
+using BHYTDashboard.Repositories;
+using BHYTDashboard.Repositories.Interfaces;
 using OfficeOpenXml;
 
 // ===== KHỞI TẠO BUILDER =====
@@ -8,11 +12,13 @@ ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // ===== ĐĂNG KÝ SERVICES =====
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IExportExcelService, ExportExcelService>();
 // ----- Entity Framework Core -----
 // TODO (TV2): Bỏ comment khi đã tạo AppDbContext
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ----- Dependency Injection -----
 // TODO (TV3): Bỏ comment khi đã tạo DashboardRepository
