@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BHYTDashboard.Migrations
 {
     [DbContext(typeof(BenhVienUbContext))]
-    [Migration("20260412081449_BHYTDashBoard")]
+    [Migration("20260413105406_BHYTDashBoard")]
     partial class BHYTDashBoard
     {
         /// <inheritdoc />
@@ -37,35 +37,35 @@ namespace BHYTDashboard.Migrations
 
                     b.Property<string>("MaBacSi")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaDichVu")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaKhoa")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaLk")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("MaLK");
 
                     b.Property<string>("MaNhomChiPhi")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("MaVatTu")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("NgayKetQua")
                         .HasColumnType("int");
@@ -79,13 +79,13 @@ namespace BHYTDashboard.Migrations
 
                     b.Property<string>("TenDichVu")
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("TenVatTu")
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("ThanhTien")
                         .HasColumnType("int");
@@ -113,38 +113,38 @@ namespace BHYTDashboard.Migrations
 
                     b.Property<string>("DonViTinh")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaKhoa")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaLk")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("MaLK");
 
                     b.Property<string>("MaNhomChiPhi")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("MaThuoc")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("SoLuong")
                         .HasColumnType("int");
 
                     b.Property<string>("TenThuoc")
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("ThanhTien")
                         .HasColumnType("int");
@@ -166,14 +166,14 @@ namespace BHYTDashboard.Migrations
                 {
                     b.Property<string>("MaDoiTuong")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("TenDoiTuong")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MaDoiTuong")
                         .HasName("PK__DanhMucD__291408A164B5DC2E");
@@ -185,15 +185,15 @@ namespace BHYTDashboard.Migrations
                 {
                     b.Property<string>("MaIcd")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("MaICD");
 
                     b.Property<string>("TenBenh")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.HasKey("MaIcd")
                         .HasName("PK__DanhMucI__3B5EE75567E3A4FA");
@@ -205,14 +205,14 @@ namespace BHYTDashboard.Migrations
                 {
                     b.Property<string>("MaNhomChiPhi")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("TenNhomChiPhi")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MaNhomChiPhi")
                         .HasName("PK__DanhMucN__40482F3C9128A357");
@@ -224,24 +224,24 @@ namespace BHYTDashboard.Migrations
                 {
                     b.Property<string>("MaLk")
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("MaLK");
 
                     b.Property<string>("ChanDoanRa")
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ChanDoanVao")
                         .HasMaxLength(500)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(500)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("DiaChi")
                         .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<int>("GioiTinh")
                         .HasColumnType("int");
@@ -249,41 +249,41 @@ namespace BHYTDashboard.Migrations
                     b.Property<string>("HoTen")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("MaBenhChinh")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("MaBn")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("MaBN");
 
                     b.Property<string>("MaCskcb")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("MaCSKCB");
 
                     b.Property<string>("MaDoiTuong")
                         .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("MaKhoa")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaTheBhyt")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("MaTheBHYT");
 
                     b.Property<int>("NgayRa")
