@@ -1,67 +1,645 @@
 @model BHYTDashboard.Models.ViewModels.DashboardViewModel
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Dashboard BHYT";
 }
 
-<!-- ===== PLACEHOLDER: TV4 sẽ thiết kế giao diện Dashboard ở đây ===== -->
-
-<div class="container mt-4">
-    <h1 class="mb-4">📊 Dashboard Bảo Hiểm Y Tế — Năm @Model.Nam</h1>
-
-    <!-- Dropdown chọn năm -->
-    <div class="mb-3">
-        <label for="selectNam" class="form-label">Chọn năm:</label>
-        <select id="selectNam" class="form-select w-auto d-inline-block" onchange="location.href='/Dashboard/Index?nam=' + this.value">
-            @foreach (var n in Model.DanhSachNam)
-            {
-                <option value="@n" selected="@(n == Model.Nam)">@n</option>
-            }
-        </select>
-    </div>
-
-    <!-- KPI Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary">
-                <div class="card-body">
-                    <h6 class="card-title">Tổng Hồ Sơ</h6>
-                    <h3>@Model.KPI.TongHoSo.ToString("N0")</h3>
-                    <small>@(Model.KPI.TyLeTangGiamHoSo >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamHoSo)% so với năm trước</small>
-                </div>
-            </div>
+<div class="dashboard-page p-0 p-lg-2">
+    <!-- HEADER SECTION -->
+    <div class="dashboard-hero d-flex flex-column flex-md-row justify-content-between align-items-md-start align-items-lg-center gap-3 gap-lg-4 mb-4 p-3 p-lg-4">
+        <div class="flex-grow-1">
+            <p class="dashboard-eyebrow mb-2">
+                <i class="bi bi-graph-up me-2"></i>BHYT ANALYTICS
+            </p>
+            <h1 class="h3 fw-bold mb-2 text-dark"><i class="bi bi-hospital me-2 text-primary"></i>Dashboard Bảo Hiểm Y Tế</h1>
+            <p class="text-muted mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Theo dõi chi phí, hiệu quả điều trị và thống kê hoạt động khám chữa bệnh theo năm với dữ liệu cập nhật thời gian thực
+            </p>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <h6 class="card-title">BHYT Thanh Toán</h6>
-                    <h3>@Model.KPI.TongBHYTThanhToan.ToString("N0") đ</h3>
-                    <small>@(Model.KPI.TyLeTangGiamBHYT >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamBHYT)% so với năm trước</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <h6 class="card-title">BN Tự Trả</h6>
-                    <h3>@Model.KPI.TongBNTuTra.ToString("N0") đ</h3>
-                    <small>@(Model.KPI.TyLeTangGiamBNTuTra >= 0 ? "↑" : "↓") @Math.Abs(Model.KPI.TyLeTangGiamBNTuTra)% so với năm trước</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <h6 class="card-title">Ngày Điều Trị TB</h6>
-                    <h3>@Model.KPI.NgayDieuTriTrungBinh.ToString("F1") ngày</h3>
-                </div>
-            </div>
+        <div class="dashboard-year-selector">
+            <label for="selectNam" class="form-label fw-semibold mb-2 d-block">
+                <i class="bi bi-calendar3-event me-2"></i>Chọn năm báo cáo
+            </label>
+            <select id="selectNam" class="form-select form-select-lg shadow-sm border-primary" style="min-width: 150px;">
+                @foreach (var n in Model.DanhSachNam)
+                {
+                    if (n == Model.Nam)
+                    {
+                        <option value="@n" selected>Năm @n</option>
+                    }
+                    else
+                    {
+                        <option value="@n">Năm @n</option>
+                    }
+                }
+            </select>
         </div>
     </div>
 
-    <!-- TODO (TV4): Thêm biểu đồ Chart.js, bảng dữ liệu, nút Export Excel -->
-    <div class="alert alert-info">
-        <strong>📌 Ghi chú cho TV4:</strong> Thêm biểu đồ Chart.js (bar chart theo tháng, pie chart theo nhóm, 
-        bảng top 10 mã bệnh), và nút Export Excel gọi <code>/Dashboard/ExportExcel?nam=...&loai=...</code>
+    <!-- LOADING INDICATOR -->
+    <div id="dashboardLoading" class="alert alert-info alert-dismissible fade d-none mx-2 mx-lg-0 mb-4" role="alert">
+        <div class="d-flex align-items-center gap-2">
+            <div class="spinner-border spinner-border-sm text-info" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+            <span><strong>Đang tải dữ liệu...</strong> Vui lòng chờ một chút</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- KPI CARDS SECTION -->
+    <div class="row g-3 mb-4 px-2 px-lg-0" id="kpiSection">
+        <!-- KPI 1: Total Records -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card dashboard-card kpi-card kpi-card-primary border-0 h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small fw-semibold mb-2">
+                                <i class="bi bi-folder-check me-1"></i>Tổng hồ sơ
+                            </p>
+                            <h3 class="mb-2 fw-bold text-dark" id="kpiTongHoSo">0</h3>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-25 text-primary">
+                            <i class="bi bi-graph-up"></i>
+                        </span>
+                    </div>
+                    <small class="text-success fw-semibold" id="kpiTyLeHoSo">0% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 2: Total BHYT Payment -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card dashboard-card kpi-card kpi-card-success border-0 h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small fw-semibold mb-2">
+                                <i class="bi bi-cash-coin me-1"></i>Tổng BHYT TT
+                            </p>
+                            <h3 class="mb-2 fw-bold text-dark" id="kpiTongBHYT">0 ₫</h3>
+                        </div>
+                        <span class="badge bg-success bg-opacity-25 text-success">
+                            <i class="bi bi-wallet2"></i>
+                        </span>
+                    </div>
+                    <small class="text-success fw-semibold" id="kpiTyLeBHYT">0% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 3: Total Self-pay Patients -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card dashboard-card kpi-card kpi-card-warning border-0 h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small fw-semibold mb-2">
+                                <i class="bi bi-person-check me-1"></i>Tổng BN tự trả
+                            </p>
+                            <h3 class="mb-2 fw-bold text-dark" id="kpiTongBNTuTra">0 ₫</h3>
+                        </div>
+                        <span class="badge bg-warning bg-opacity-25 text-warning">
+                            <i class="bi bi-people"></i>
+                        </span>
+                    </div>
+                    <small class="text-warning fw-semibold" id="kpiTyLeBNTuTra">0% so với năm trước</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 4: Average Treatment Days -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card dashboard-card kpi-card kpi-card-info border-0 h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted small fw-semibold mb-2">
+                                <i class="bi bi-calendar-day me-1"></i>Ngày điều trị TB
+                            </p>
+                            <h3 class="mb-2 fw-bold text-dark" id="kpiNgayDieuTri">0 ngày</h3>
+                        </div>
+                        <span class="badge bg-info bg-opacity-25 text-info">
+                            <i class="bi bi-hourglass-split"></i>
+                        </span>
+                    </div>
+                    <small class="text-muted">KPI hiệu quả điều trị</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARTS SECTION -->
+    <div class="row g-3 px-2 px-lg-0">
+        <!-- Chart 1: Monthly Report (Column + Line) -->
+        <div class="col-12">
+            <div class="card dashboard-panel border-0 shadow-sm h-100">
+                <div class="card-header dashboard-panel-header d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 p-lg-4">
+                    <h2 class="h6 mb-0 fw-bold">
+                        <i class="bi bi-bar-chart-line me-2 text-primary"></i>
+                        1) Báo cáo theo tháng: Biểu đồ cột + đường
+                    </h2>
+                    <a id="exportThang" href="#" class="btn btn-sm btn-success btn-export" title="Xuất dữ liệu sang Excel">
+                        <i class="bi bi-file-earmark-excel me-1"></i>
+                        <span class="d-none d-sm-inline">Xuất Excel</span>
+                        <span class="d-sm-none">Export</span>
+                    </a>
+                </div>
+                <div class="card-body p-3 p-lg-4">
+                    <div class="dashboard-chart" style="min-height: 350px;">
+                        <canvas id="chartThang" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Cost Group (Pie) -->
+        <div class="col-12 col-lg-6">
+            <div class="card dashboard-panel border-0 shadow-sm h-100">
+                <div class="card-header dashboard-panel-header d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 p-lg-4">
+                    <h2 class="h6 mb-0 fw-bold">
+                        <i class="bi bi-pie-chart me-2 text-info"></i>
+                        2) Chi phí theo nhóm dịch vụ
+                    </h2>
+                    <a id="exportNhom" href="#" class="btn btn-sm btn-success btn-export" title="Xuất dữ liệu sang Excel">
+                        <i class="bi bi-file-earmark-excel me-1"></i>
+                        <span class="d-none d-sm-inline">Xuất Excel</span>
+                        <span class="d-sm-none">Export</span>
+                    </a>
+                </div>
+                <div class="card-body p-3 p-lg-4">
+                    <div class="dashboard-chart" style="min-height: 300px;">
+                        <canvas id="chartNhom" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 3: Patient Type (Column) -->
+        <div class="col-12 col-lg-6">
+            <div class="card dashboard-panel border-0 shadow-sm h-100">
+                <div class="card-header dashboard-panel-header d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 p-lg-4">
+                    <h2 class="h6 mb-0 fw-bold">
+                        <i class="bi bi-people me-2 text-success"></i>
+                        3) Chi phí theo đối tượng khám chữa bệnh
+                    </h2>
+                    <a id="exportDoiTuong" href="#" class="btn btn-sm btn-success btn-export" title="Xuất dữ liệu sang Excel">
+                        <i class="bi bi-file-earmark-excel me-1"></i>
+                        <span class="d-none d-sm-inline">Xuất Excel</span>
+                        <span class="d-sm-none">Export</span>
+                    </a>
+                </div>
+                <div class="card-body p-3 p-lg-4">
+                    <div class="dashboard-chart" style="min-height: 300px;">
+                        <canvas id="chartDoiTuong" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Top 10 Diseases (Horizontal Bar) -->
+        <div class="col-12">
+            <div class="card dashboard-panel border-0 shadow-sm h-100">
+                <div class="card-header dashboard-panel-header d-flex justify-content-between align-items-center flex-wrap gap-2 p-3 p-lg-4">
+                    <h2 class="h6 mb-0 fw-bold">
+                        <i class="bi bi-clipboard2-pulse me-2 text-warning"></i>
+                        4) Top 10 mã bệnh có số lượng hồ sơ nhiều nhất (Bar ngang)
+                    </h2>
+                    <a id="exportTop10" href="#" class="btn btn-sm btn-success btn-export" title="Xuất dữ liệu sang Excel">
+                        <i class="bi bi-file-earmark-excel me-1"></i>
+                        <span class="d-none d-sm-inline">Xuất Excel</span>
+                        <span class="d-sm-none">Export</span>
+                    </a>
+                </div>
+                <div class="card-body p-3 p-lg-4">
+                    <div class="dashboard-chart mb-4" style="min-height: 350px;">
+                        <canvas id="chartTop10" class="w-100"></canvas>
+                    </div>
+                    <!-- Data Table for Top 10 -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>
+                                        <i class="bi bi-calendar-event me-1"></i>Mã bệnh
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-file-text me-1"></i>Tên bệnh
+                                    </th>
+                                    <th class="text-end">
+                                        <i class="bi bi-stack me-1"></i>Số hồ sơ
+                                    </th>
+                                    <th class="text-end">
+                                        <i class="bi bi-percent me-1"></i>Tỷ lệ (%)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableTop10Body">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">
+                                        <i class="bi bi-hourglass-split me-2"></i>Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // ============ GLOBAL CONFIGURATION ============
+        const initialData = @Html.Raw(JsonSerializer.Serialize(Model));
+        let chartThang, chartNhom, chartDoiTuong, chartTop10;
+
+        // Formatters for currency and numbers
+        const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+            style: "decimal",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        const numberFormatter = new Intl.NumberFormat("vi-VN", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+
+        const percentFormatter = new Intl.NumberFormat("vi-VN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        // ============ UTILITY FUNCTIONS ============
+        /**
+         * Get property from object (handles both PascalCase and camelCase)
+         */
+        function getProp(obj, pascal, camel) {
+            return obj?.[pascal] ?? obj?.[camel];
+        }
+
+        /**
+         * Format percentage with arrow indicator
+         */
+        function formatPercent(value) {
+            const numeric = Number(value || 0);
+            const arrow = numeric >= 0 ? "▲ " : "▼ ";
+            const color = numeric >= 0 ? "text-success" : "text-danger";
+            return `<span class="${color} fw-semibold">${arrow}${Math.abs(numeric).toFixed(2)}%</span>`;
+        }
+
+        // ============ KPI UPDATE FUNCTION ============
+        /**
+         * Update KPI card values
+         */
+        function updateKpi(kpi) {
+            const totalRecords = getProp(kpi, "TongHoSo", "tongHoSo") || 0;
+            const totalBHYT = getProp(kpi, "TongBHYTThanhToan", "tongBHYTThanhToan") || 0;
+            const totalSelfPay = getProp(kpi, "TongBNTuTra", "tongBNTuTra") || 0;
+            const avgTreatmentDays = getProp(kpi, "NgayDieuTriTrungBinh", "ngayDieuTriTrungBinh") || 0;
+
+            document.getElementById("kpiTongHoSo").innerText = numberFormatter.format(totalRecords);
+            document.getElementById("kpiTongBHYT").innerHTML = `${currencyFormatter.format(totalBHYT)} <span class="small text-muted">₫</span>`;
+            document.getElementById("kpiTongBNTuTra").innerHTML = `${currencyFormatter.format(totalSelfPay)} <span class="small text-muted">₫</span>`;
+            document.getElementById("kpiNgayDieuTri").innerHTML = `${Number(avgTreatmentDays).toFixed(1)} <span class="small text-muted">ngày</span>`;
+
+            document.getElementById("kpiTyLeHoSo").innerHTML = formatPercent(getProp(kpi, "TyLeTangGiamHoSo", "tyLeTangGiamHoSo"));
+            document.getElementById("kpiTyLeBHYT").innerHTML = formatPercent(getProp(kpi, "TyLeTangGiamBHYT", "tyLeTangGiamBHYT"));
+            document.getElementById("kpiTyLeBNTuTra").innerHTML = formatPercent(getProp(kpi, "TyLeTangGiamBNTuTra", "tyLeTangGiamBNTuTra"));
+        }
+
+        // ============ CHART BUILDER FUNCTIONS ============
+        /**
+         * Build Monthly Chart (Column + Line)
+         */
+        function buildMonthlyChart(data) {
+            const labels = data.map(x => {
+                const month = getProp(x, "Thang", "thang");
+                return `Tháng ${month}`;
+            });
+            const bhyt = data.map(x => Number(getProp(x, "TongBHYTThanhToan", "tongBHYTThanhToan") || 0));
+            const growth = data.map(x => Number(getProp(x, "TyLeTangGiam", "tyLeTangGiam") || 0));
+
+            if (chartThang) chartThang.destroy();
+            
+            chartThang = new Chart(document.getElementById("chartThang"), {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: "BHYT thanh toán (₫)",
+                            data: bhyt,
+                            backgroundColor: "rgba(37, 99, 235, 0.8)",
+                            borderColor: "rgba(37, 99, 235, 1)",
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            maxBarThickness: 40,
+                            yAxisID: "y"
+                        },
+                        {
+                            label: "Tăng/Giảm (%)",
+                            data: growth,
+                            type: "line",
+                            borderColor: "rgba(239, 68, 68, 1)",
+                            backgroundColor: "rgba(239, 68, 68, 0.1)",
+                            pointBackgroundColor: "rgba(239, 68, 68, 1)",
+                            pointBorderColor: "#fff",
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.4,
+                            yAxisID: "y1"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: "index", intersect: false },
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: { usePointStyle: true, padding: 15 }
+                        },
+                        tooltip: {
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            titleFont: { size: 12, weight: "bold" },
+                            bodyFont: { size: 11 },
+                            padding: 12,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            position: "left",
+                            beginAtZero: true,
+                            ticks: { callback: v => currencyFormatter.format(v / 1e9) + "B" }
+                        },
+                        y1: {
+                            position: "right",
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Build Cost Group Chart (Pie)
+         */
+        function buildNhomChart(data) {
+            const labels = data.map(x => getProp(x, "TenNhom", "tenNhom"));
+            const values = data.map(x => Number(getProp(x, "TongChiPhi", "tongChiPhi") || 0));
+
+            if (chartNhom) chartNhom.destroy();
+            
+            chartNhom = new Chart(document.getElementById("chartNhom"), {
+                type: "doughnut",
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            "rgba(37, 99, 235, 0.8)",   // Blue
+                            "rgba(6, 182, 212, 0.8)",   // Cyan
+                            "rgba(16, 185, 129, 0.8)",  // Green
+                            "rgba(245, 158, 11, 0.8)",  // Amber
+                            "rgba(239, 68, 68, 0.8)",   // Red
+                            "rgba(139, 92, 246, 0.8)",  // Purple
+                            "rgba(20, 184, 166, 0.8)",  // Teal
+                            "rgba(249, 115, 22, 0.8)",  // Orange
+                            "rgba(132, 204, 22, 0.8)",  // Lime
+                            "rgba(14, 165, 233, 0.8)"   // Sky
+                        ],
+                        borderColor: "#fff",
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: { usePointStyle: true, padding: 15, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            callbacks: {
+                                label: (context) => {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percent = ((value / total) * 100).toFixed(1);
+                                    return `${currencyFormatter.format(value)} ₫ (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Build Patient Type Chart (Column)
+         */
+        function buildDoiTuongChart(data) {
+            const labels = data.map(x => getProp(x, "TenDoiTuong", "tenDoiTuong"));
+            const values = data.map(x => Number(getProp(x, "TongBHYTThanhToan", "tongBHYTThanhToan") || 0));
+
+            if (chartDoiTuong) chartDoiTuong.destroy();
+            
+            chartDoiTuong = new Chart(document.getElementById("chartDoiTuong"), {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "BHYT thanh toán (₫)",
+                        data: values,
+                        backgroundColor: "rgba(16, 185, 129, 0.8)",
+                        borderColor: "rgba(16, 185, 129, 1)",
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        maxBarThickness: 35
+                    }]
+                },
+                options: {
+                    indexAxis: "x",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "bottom", labels: { usePointStyle: true, padding: 15 } },
+                        tooltip: {
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            callbacks: { label: (ctx) => currencyFormatter.format(ctx.parsed.y) + " ₫" }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: v => currencyFormatter.format(v / 1e9) + "B" } }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Build Top 10 Diseases Chart (Horizontal Bar)
+         */
+        function buildTop10Chart(data) {
+            const labels = data.map(x => {
+                const code = getProp(x, "MaBenh", "maBenh");
+                const name = getProp(x, "TenBenh", "tenBenh");
+                return code ? `${code}` : name;
+            });
+            const values = data.map(x => Number(getProp(x, "SoLuongHoSo", "soLuongHoSo") || 0));
+
+            if (chartTop10) chartTop10.destroy();
+            
+            chartTop10 = new Chart(document.getElementById("chartTop10"), {
+                type: "bar",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "Số hồ sơ",
+                        data: values,
+                        backgroundColor: "rgba(139, 92, 246, 0.8)",
+                        borderColor: "rgba(139, 92, 246, 1)",
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "bottom", labels: { usePointStyle: true, padding: 15 } },
+                        tooltip: {
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            callbacks: { label: (ctx) => "Hồ sơ: " + numberFormatter.format(ctx.parsed.x) }
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { callback: v => numberFormatter.format(v) } }
+                    }
+                }
+            });
+
+            // Update table data
+            const rows = data.map((x, index) => {
+                const code = getProp(x, "MaBenh", "maBenh");
+                const name = getProp(x, "TenBenh", "tenBenh");
+                const count = getProp(x, "SoLuongHoSo", "soLuongHoSo") || 0;
+                const percent = getProp(x, "TyLe", "tyLe") || 0;
+                
+                return `
+                    <tr>
+                        <td><span class="badge bg-light text-dark">${code}</span></td>
+                        <td title="${name}">${name.substring(0, 50)}${name.length > 50 ? '...' : ''}</td>
+                        <td class="text-end fw-semibold">${numberFormatter.format(count)}</td>
+                        <td class="text-end">
+                            <span class="badge bg-info bg-opacity-25 text-info">${percentFormatter.format(percent)}%</span>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+            
+            document.getElementById("tableTop10Body").innerHTML = rows;
+        }
+
+        // ============ EXPORT LINKS UPDATE ============
+        /**
+         * Update Excel export links with current year
+         */
+        function updateExportLinks(year) {
+            document.getElementById("exportThang").href = `/Dashboard/ExportExcel?nam=${year}&loai=thang`;
+            document.getElementById("exportNhom").href = `/Dashboard/ExportExcel?nam=${year}&loai=nhom`;
+            document.getElementById("exportDoiTuong").href = `/Dashboard/ExportExcel?nam=${year}&loai=doituong`;
+            document.getElementById("exportTop10").href = `/Dashboard/ExportExcel?nam=${year}&loai=top10benh`;
+        }
+
+        // ============ MAIN RENDER FUNCTION ============
+        /**
+         * Render all dashboard components
+         */
+        function renderDashboard(data) {
+            const year = getProp(data, "Nam", "nam") || new Date().getFullYear();
+            const kpi = getProp(data, "KPI", "kpi") || {};
+            const theoThang = getProp(data, "BaoCaoTheoThang", "baoCaoTheoThang") || [];
+            const theoNhom = getProp(data, "BaoCaoTheoNhom", "baoCaoTheoNhom") || [];
+            const theoDoiTuong = getProp(data, "BaoCaoTheoDoiTuong", "baoCaoTheoDoiTuong") || [];
+            const top10 = getProp(data, "Top10MaBenh", "top10MaBenh") || [];
+
+            updateKpi(kpi);
+            
+            if (theoThang.length > 0) buildMonthlyChart(theoThang);
+            if (theoNhom.length > 0) buildNhomChart(theoNhom);
+            if (theoDoiTuong.length > 0) buildDoiTuongChart(theoDoiTuong);
+            if (top10.length > 0) buildTop10Chart(top10);
+            
+            updateExportLinks(year);
+        }
+
+        // ============ YEAR CHANGE HANDLER ============
+        /**
+         * Handle year selection change with AJAX data loading
+         */
+        async function changeYear(year) {
+            const loadingDiv = document.getElementById("dashboardLoading");
+            loadingDiv.classList.remove("d-none");
+            
+            try {
+                const response = await fetch(`/Dashboard/GetDashboardData?nam=${year}`, {
+                    method: "GET",
+                    headers: { "Accept": "application/json" }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                renderDashboard(data);
+                
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            } catch (error) {
+                console.error("Error loading dashboard data:", error);
+                alert("⚠️ Không thể tải dữ liệu năm " + year + ".\n\nLỗi: " + (error.message || "Vui lòng thử lại sau."));
+            } finally {
+                loadingDiv.classList.add("d-none");
+            }
+        }
+
+        // ============ EVENT LISTENERS ============
+        /**
+         * Year selector change event
+         */
+        document.getElementById("selectNam")?.addEventListener("change", function () {
+            if (this.value) changeYear(this.value);
+        });
+
+        /**
+         * Export button click handlers
+         */
+        document.querySelectorAll(".btn-export").forEach(btn => {
+            btn.addEventListener("click", function(e) {
+                if (!this.href || this.href === "#") {
+                    e.preventDefault();
+                    alert("Chưa có dữ liệu để xuất. Vui lòng chọn năm báo cáo.");
+                }
+            });
+        });
+
+        // ============ INITIAL RENDER ============
+        document.addEventListener("DOMContentLoaded", function () {
+            renderDashboard(initialData);
+        });
+    </script>
+}

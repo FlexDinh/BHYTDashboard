@@ -1,3 +1,10 @@
+using BHYTDashboard.Data;
+using BHYTDashboard.Repositories;
+using BHYTDashboard.Repositories.Interfaces;
+using BHYTDashboard.Scripts;
+using BHYTDashboard.Services;
+using BHYTDashboard.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 // ===== KHỞI TẠO BUILDER =====
@@ -8,25 +15,23 @@ ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // ===== ĐĂNG KÝ SERVICES =====
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IExportExcelService, ExportExcelService>();
 // ----- Entity Framework Core -----
 // TODO (TV2): Bỏ comment khi đã tạo AppDbContext
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<BenhVienUbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ----- Dependency Injection -----
-// TODO (TV3): Bỏ comment khi đã tạo DashboardRepository
-// builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
-// TODO (TV3/TV5): Bỏ comment khi đã tạo DashboardService
-// builder.Services.AddScoped<IDashboardService, DashboardService>();
-
-// TODO (TV5): Bỏ comment khi đã tạo ExportExcelService
-// builder.Services.AddScoped<IExportExcelService, ExportExcelService>();
 
 // ===== BUILD APP =====
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BenhVienUbContext>();
+    SeedData.Initialize(context);
+}
 // ===== MIDDLEWARE PIPELINE =====
 if (!app.Environment.IsDevelopment())
 {
@@ -40,10 +45,10 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-// ===== ROUTING — Mặc định trỏ đến Dashboard/Index =====
+// ===== ROUTING — Mặc định trỏ đến Home/Index (Landing Page) =====
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Dashboard}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

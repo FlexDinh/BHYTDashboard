@@ -28,5 +28,10 @@ namespace BHYTDashboard.Repositories.Interfaces
         /// Lấy dữ liệu KPI tổng hợp cho dashboard
         /// </summary>
         Task<KPICardVM> GetKPIDataAsync(int nam);
+
+        /// <summary>
+        /// Lấy danh sách các năm có dữ liệu trong database (từ bảng HoSoBenhNhan)
+        /// </summary>
+        Task<List<int>> GetDanhSachNamAsync();
     }
 }

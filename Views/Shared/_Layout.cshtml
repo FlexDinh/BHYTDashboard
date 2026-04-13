@@ -1,47 +1,110 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BHYTDashboard</title>
-    <script type="importmap"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="description" content="BHYT Dashboard - Hệ thống báo cáo chi phí khám chữa bệnh bảo hiểm y tế" />
+    <title>@ViewData["Title"] - BHYT Dashboard</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BHYTDashboard.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BHYTDashboard</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <div class="app-shell">
+        <!-- TOP NAVBAR -->
+        <nav class="navbar navbar-expand-lg app-topbar border-bottom sticky-top">
+            <div class="container-fluid px-lg-4">
+                <button class="btn btn-link d-lg-none me-2 text-dark" type="button" data-bs-toggle="offcanvas" 
+                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" title="Mở menu">
+                    <i class="bi bi-list fs-5"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index" title="BHYT Dashboard">
+                    <span class="brand-dot"></span>
+                    <span class="d-none d-sm-inline">BHYT Dashboard</span>
+                    <span class="d-sm-none">BHYT</span>
+                </a>
+                <div class="ms-auto d-none d-md-flex align-items-center gap-3">
+                    <div class="text-secondary d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar3"></i>
+                        <small>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <div class="vr"></div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light border rounded-2 d-flex align-items-center gap-2" 
+                                type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <span class="d-none d-lg-inline">Admin</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li><h6 class="dropdown-header">Người dùng</h6></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Cài đặt</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle me-2"></i>Trợ giúp</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="app-body">
+            <!-- SIDEBAR NAVIGATION -->
+            <aside class="offcanvas-lg offcanvas-start app-sidebar" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+                <div class="offcanvas-header border-bottom app-sidebar-header">
+                    <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">
+                        <i class="bi bi-compass-fill me-2 text-primary"></i>Điều hướng
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" 
+                            data-bs-target="#sidebarMenu" aria-label="Đóng"></button>
+                </div>
+                <div class="offcanvas-body p-0">
+                    <nav class="nav flex-column p-3 gap-2">
+                        <!-- REPORTS SECTION -->
+        
+                        <a class="nav-link rounded px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active fw-semibold" : "")"
+                           asp-area="" asp-controller="Dashboard" asp-action="Index" title="Trang tổng quan">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </nav>
+                </div>
+                <div class="app-sidebar-footer border-top p-3">
+                    <small class="text-muted d-block">© 2026 BHYT Dashboard</small>
+                    <small class="text-muted">v1.0 - Hệ thống báo cáo BHYT</small>
+                </div>
+            </aside>
+
+            <!-- PAGE CONTENT -->
+            <main role="main" class="app-content">
+                <div class="app-content-inner">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="app-footer border-top mt-auto">
+            <div class="container-fluid px-lg-4 py-3">
+                <div class="row g-2 text-sm">
+                    <div class="col-12 col-md-auto">
+                        <span class="text-muted">
+                            <strong>BHYT Dashboard</strong> © 2026
+                        </span>
+                    </div>
+                    <div class="col-12 col-md-auto ms-md-auto">
+                        <span class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Hệ thống báo cáo chi phí khám chữa bệnh bảo hiểm y tế
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BHYTDashboard - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
