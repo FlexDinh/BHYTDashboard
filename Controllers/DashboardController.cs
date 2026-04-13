@@ -49,6 +49,18 @@ namespace BHYTDashboard.Controllers
         }
 
         /// <summary>
+        /// API trả toàn bộ dữ liệu dashboard theo năm (KPI + các báo cáo)
+        /// Dùng cho AJAX reload không tải lại trang
+        /// </summary>
+        /// <param name="nam">Năm</param>
+        [HttpGet]
+        public async Task<IActionResult> GetDashboardData(int nam)
+        {
+            var data = await _dashboardService.GetDashboardDataAsync(nam);
+            return Json(data);
+        }
+
+        /// <summary>
         /// Xuất dữ liệu ra file Excel (.xlsx)
         /// </summary>
         /// <param name="nam">Năm</param>

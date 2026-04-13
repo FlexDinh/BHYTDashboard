@@ -29,8 +29,12 @@ public partial class BenhVienUbContext : DbContext
     public virtual DbSet<HoSoBenhNhan> HoSoBenhNhans { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-KU34JC9\\SQLEXPRESS;Database=BHYTDashboardDb;Trusted_Connection=True;TrustServerCertificate=True;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Connection string will be provided by Program.cs via dependency injection
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,30 +46,30 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.MaBacSi)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaDichVu)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaKhoa)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaLk)
                 .HasMaxLength(100)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaLK");
             entity.Property(e => e.MaNhomChiPhi)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaVatTu)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.NgayYlenh).HasColumnName("NgayYLenh");
             entity.Property(e => e.TenDichVu)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.TenVatTu)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.MaLkNavigation).WithMany(p => p.ChiTietDvkts)
                 .HasForeignKey(d => d.MaLk)
@@ -85,23 +89,23 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.DonViTinh)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaKhoa)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaLk)
                 .HasMaxLength(100)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaLK");
             entity.Property(e => e.MaNhomChiPhi)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaThuoc)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.TenThuoc)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.MaLkNavigation).WithMany(p => p.ChiTietThuocs)
                 .HasForeignKey(d => d.MaLk)
@@ -121,10 +125,10 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.MaDoiTuong)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.TenDoiTuong)
                 .HasMaxLength(255)
-                .IsUnicode(false);
+                .IsUnicode(true);
         });
 
         modelBuilder.Entity<DanhMucIcd10>(entity =>
@@ -135,11 +139,11 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.MaIcd)
                 .HasMaxLength(10)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaICD");
             entity.Property(e => e.TenBenh)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
         });
 
         modelBuilder.Entity<DanhMucNhomChiPhi>(entity =>
@@ -150,10 +154,10 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.MaNhomChiPhi)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.TenNhomChiPhi)
                 .HasMaxLength(255)
-                .IsUnicode(false);
+                .IsUnicode(true);
         });
 
         modelBuilder.Entity<HoSoBenhNhan>(entity =>
@@ -164,40 +168,40 @@ public partial class BenhVienUbContext : DbContext
 
             entity.Property(e => e.MaLk)
                 .HasMaxLength(100)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaLK");
             entity.Property(e => e.ChanDoanRa)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.ChanDoanVao)
                 .HasMaxLength(500)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.DiaChi)
                 .HasMaxLength(1024)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.HoTen)
                 .HasMaxLength(255)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaBenhChinh)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaBn)
                 .HasMaxLength(100)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaBN");
             entity.Property(e => e.MaCskcb)
                 .HasMaxLength(10)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaCSKCB");
             entity.Property(e => e.MaDoiTuong)
                 .HasMaxLength(10)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaKhoa)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.MaTheBhyt)
                 .HasMaxLength(50)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("MaTheBHYT");
             entity.Property(e => e.TongBhchiTra).HasColumnName("TongBHChiTra");
 

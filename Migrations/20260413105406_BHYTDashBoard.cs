@@ -14,8 +14,8 @@ namespace BHYTDashboard.Migrations
                 name: "DanhMucDoiTuong",
                 columns: table => new
                 {
-                    MaDoiTuong = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    TenDoiTuong = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false)
+                    MaDoiTuong = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    TenDoiTuong = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -26,8 +26,8 @@ namespace BHYTDashboard.Migrations
                 name: "DanhMucICD10",
                 columns: table => new
                 {
-                    MaICD = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    TenBenh = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: false)
+                    MaICD = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    TenBenh = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,8 +38,8 @@ namespace BHYTDashboard.Migrations
                 name: "DanhMucNhomChiPhi",
                 columns: table => new
                 {
-                    MaNhomChiPhi = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    TenNhomChiPhi = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false)
+                    MaNhomChiPhi = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    TenNhomChiPhi = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,21 +50,21 @@ namespace BHYTDashboard.Migrations
                 name: "HoSoBenhNhan",
                 columns: table => new
                 {
-                    MaLK = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    MaBN = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    HoTen = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    MaLK = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaBN = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    HoTen = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     NgaySinh = table.Column<int>(type: "int", nullable: false),
                     GioiTinh = table.Column<int>(type: "int", nullable: false),
-                    DiaChi = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    MaTheBHYT = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    MaDoiTuong = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
+                    DiaChi = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    MaTheBHYT = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    MaDoiTuong = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     NgayVao = table.Column<int>(type: "int", nullable: false),
                     NgayRa = table.Column<int>(type: "int", nullable: false),
-                    ChanDoanVao = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
-                    ChanDoanRa = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
-                    MaBenhChinh = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
-                    MaCSKCB = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
-                    MaKhoa = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    ChanDoanVao = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ChanDoanRa = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    MaBenhChinh = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    MaCSKCB = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    MaKhoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TongChiPhi = table.Column<int>(type: "int", nullable: true),
                     TongBHChiTra = table.Column<int>(type: "int", nullable: true),
                     TongBenhNhanTra = table.Column<int>(type: "int", nullable: true)
@@ -90,17 +90,17 @@ namespace BHYTDashboard.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MaLK = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    MaDichVu = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    TenDichVu = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
-                    MaVatTu = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    TenVatTu = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
+                    MaLK = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaDichVu = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenDichVu = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    MaVatTu = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenVatTu = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: true),
                     DonGia = table.Column<int>(type: "int", nullable: true),
                     ThanhTien = table.Column<int>(type: "int", nullable: true),
-                    MaNhomChiPhi = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
-                    MaKhoa = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    MaBacSi = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    MaNhomChiPhi = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    MaKhoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    MaBacSi = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     NgayYLenh = table.Column<int>(type: "int", nullable: true),
                     NgayKetQua = table.Column<int>(type: "int", nullable: true)
                 },
@@ -125,16 +125,16 @@ namespace BHYTDashboard.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    MaLK = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    MaThuoc = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    TenThuoc = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
-                    DonViTinh = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    MaLK = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MaThuoc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenThuoc = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DonViTinh = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     SoLuong = table.Column<int>(type: "int", nullable: true),
                     DonGia = table.Column<int>(type: "int", nullable: true),
                     ThanhTien = table.Column<int>(type: "int", nullable: true),
                     TyLeThanhToan = table.Column<int>(type: "int", nullable: true),
-                    MaNhomChiPhi = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: true),
-                    MaKhoa = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    MaNhomChiPhi = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    MaKhoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {

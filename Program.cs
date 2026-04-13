@@ -45,10 +45,10 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-// ===== ROUTING — Mặc định trỏ đến Dashboard/Index =====
+// ===== ROUTING — Mặc định trỏ đến Home/Index (Landing Page) =====
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Dashboard}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
