@@ -15,8 +15,12 @@ namespace BHYTDashboard.Services
 
             public async Task<DashboardViewModel> GetDashboardDataAsync(int nam)
             {
+                var danhSachNam = await _repo.GetDanhSachNamAsync();
+                
                 return new DashboardViewModel
                 {
+                    Nam = nam,
+                    DanhSachNam = danhSachNam,
                     BaoCaoTheoThang = await _repo.GetBaoCaoTheoThangAsync(nam),
                     BaoCaoTheoNhom = await _repo.GetBaoCaoTheoNhomAsync(nam),
                     BaoCaoTheoDoiTuong = await _repo.GetBaoCaoTheoDoiTuongAsync(nam),

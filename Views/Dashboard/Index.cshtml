@@ -7,18 +7,32 @@
 <!-- ===== PLACEHOLDER: TV4 sẽ thiết kế giao diện Dashboard ở đây ===== -->
 
 <div class="container mt-4">
-    <h1 class="mb-4">Dashboard Bảo Hiểm Y Tế — Năm @Model.Nam</h1>
+    <h1 class="mb-4">
+        Dashboard Bảo Hiểm Y Tế — Năm @Model.Nam
+    </h1>
 
     <!-- Dropdown chọn năm -->
     <div class="mb-3">
         <label for="selectNam" class="form-label">Chọn năm:</label>
-        <select id="selectNam" class="form-select w-auto d-inline-block" onchange="location.href='/Dashboard/Index?nam=' + this.value">
+
+        <select id="selectNam"
+                class="form-select w-auto d-inline-block"
+                onchange="changeYear(this.value)">
+
             @foreach (var n in Model.DanhSachNam)
             {
-                <option value="@n" selected="@(n == Model.Nam)">@n</option>
+                if (n == Model.Nam)
+                {
+                    <option value="@n" selected>@n</option>
+                }
+                else
+                {
+                    <option value="@n">@n</option>
+                }
             }
         </select>
     </div>
+
 
     <!-- KPI Cards -->
     <div class="row mb-4">
@@ -65,3 +79,8 @@
         bảng top 10 mã bệnh), và nút Export Excel gọi <code>/Dashboard/ExportExcel?nam=...&loai=...</code>
     </div>
 </div>
+<script>
+    function changeYear(nam) {
+        window.location.href = '/Dashboard/Index?nam=' + nam;
+    }
+</script>
